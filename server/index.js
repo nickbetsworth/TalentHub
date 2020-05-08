@@ -9,9 +9,17 @@ const github = require('./services/github')
 
 // Get a list of candidate users that match criteria
 app.get('/users', (req, res) => {
-  console.log(req.query)
-  github.getUsersMatchingCriteria(req.query.location).then(data => {
+  
+  if (!req.query.location) {
+    res.status(400).send({error: 'location param must be provided'})
+  }
+  
+  github.getUsersMatchingCriteria(req.query.location)
+  .then(data => {
     res.send(data);
+  })
+  .catch(data => {
+    res.send(data)
   })
   
 });
