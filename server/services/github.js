@@ -7,7 +7,7 @@ client.user()
 
 const encodeParams = params => querystring.stringify(params, '+', ':')
 
-const getUsersMatchingCriteria = (location) => {
+const getUsersMatchingCriteria = async location => {
   if (!location) {
     throw new Error('location must be provided')
   }
@@ -17,13 +17,16 @@ const getUsersMatchingCriteria = (location) => {
     followers: '>5'
   }
 
-  return aggregatePaginatedResults(
+  users = await aggregatePaginatedResults(
     (page, perPage) => ghsearch.usersAsync({
       page: page,
       per_page: perPage,
       q: encodeParams(params)
     }),
-    body => body.items)
+    body => body.items
+  )
+
+  return Promise.all(users.map(user => getUser(user.login)))
 }
 
 const getUser = async username => {
@@ -46,9 +49,7 @@ const aggregatePaginatedResults = async (queryFunction, extractorFunction) => {
   let items = []
 
   while (true) {
-    console.log(`Gathering data from page ${page}`)
     result = await queryFunction(page++, itemsPerPage)
-    console.log(result)
     const header = result[1]
     const body = result[0]
 
@@ -57,9 +58,7 @@ const aggregatePaginatedResults = async (queryFunction, extractorFunction) => {
     if (header.link && !header.link.includes('rel="next"')) {
       break
     }
-    break
   }
-
   return items
 }
 
