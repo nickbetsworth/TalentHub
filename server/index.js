@@ -1,27 +1,32 @@
+require('dotenv').config()
+
 const express = require('express')
 const app = express()
+const errorHandler = require('./middleware/errorHandler')
+
 const github = require('./services/github')
 
-//app.get('/users/')
-
-// Get the contact details of a user
-//app.get('/contact/')
+const PORT = process.env.PORT || 3000
 
 // Get a list of candidate users that match criteria
-app.get('/users', (req, res) => {
-  
-  if (!req.query.location) {
-    res.status(400).send({error: 'location param must be provided'})
-  }
-  
+app.get('/users', (req, res, next) => {
   github.getUsersMatchingCriteria(req.query.location)
   .then(data => {
-    res.send(data);
-  })
-  .catch(data => {
     res.send(data)
   })
-  
-});
+  .catch(error => next(error))
+})
 
-app.listen(3000, () => console.log(`Listening on port ${3000}`))
+app.get('/user/:name', (req, res, next) => {
+  github.getUser(req.params.name)
+  .then(data => {
+    res.send(data)
+  })
+  .catch(error => next(error))
+})
+
+
+
+app.use(errorHandler)
+
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
