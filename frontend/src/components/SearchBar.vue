@@ -33,5 +33,7 @@ export default {
 </script>
 
 <style scoped>
-
+/* input[type=text] {
+  width: 200px;
+} */
 </style>

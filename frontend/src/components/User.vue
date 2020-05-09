@@ -13,6 +13,7 @@ export default {
 
 <style>
 img {
-  border-radius: 10%;
+  border-radius: 15%;
+  
 }
 </style>
