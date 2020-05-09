@@ -1,6 +1,9 @@
 <template>
   <div class="field is-grouped is-grouped-multiline" style="margin-top: 10px">
     <div class="control">
+        <h3 class="title is-5">API Limits</h3>
+    </div>
+    <div class="control">
       <limit
         type="Main"
         :remaining="limits.main.remaining"

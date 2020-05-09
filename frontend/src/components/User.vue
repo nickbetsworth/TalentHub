@@ -1,6 +1,8 @@
 <template>
   <div class="content">
-    <img :src="data.avatar_url" width="64px" />
+    <a :href="data.html_url">
+      <img :src="data.avatar_url" width="64px" />
+    </a>
   </div>
 </template>
 
@@ -14,6 +16,5 @@ export default {
 <style>
 img {
   border-radius: 15%;
-  
 }
 </style>

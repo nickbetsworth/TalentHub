@@ -1,25 +1,19 @@
 <template>
   <div id="app">
     <div class="container">
-      <div class="hero is-dark">
-        <div class="hero-body">
-          <div class="container">
-            <h1 class="title">
-              TalentHub
-            </h1>
-          </div>
-        </div>
+      <div class="section">
+        <h1 class="title is-2 has-text-light">
+          Talent Hub
+        </h1>
       </div>
-
-      <limit-status-bar v-if="limits" :limits="limits"></limit-status-bar>
-      <search-bar v-model="searchCriteria" @search="search"></search-bar>
+      <search-bar v-model="searchCriteria" @search="search" :enabled="searchEnabled"></search-bar>
       <search-results :users="users"></search-results>
-      <!-- <div class="columns is-mobile is-centered is-vcentered" style="height: 40vh">
-        <div class="column is-narrow">
-          <h1 class="title">Title</h1>
-        </div>
-      </div> -->
     </div>
+    <nav class="navbar is-fixed-bottom">
+      <div class="container">
+        <limit-status-bar v-if="limits" :limits="limits"></limit-status-bar>
+      </div>
+    </nav>
   </div>
 </template>
 
@@ -40,6 +34,7 @@ export default {
     return {
       searchCriteria: '',
       users: [],
+      searchEnabled: true,
       limits: false
     }
   },
@@ -48,10 +43,15 @@ export default {
   },
   methods: {
     search() {
+      this.searchEnabled = false
+
       axios.get(`http://localhost:3000/users?location=${this.searchCriteria}`)
       .then(res => {
         this.users = res.data
         this.updateLimits()
+      })
+      .finally(() => {
+        this.searchEnabled = true
       })
     },
     updateLimits() {
@@ -74,10 +74,23 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
 @import "~bulma/css/bulma.min.css";
 
+h1.title {
+  font-weight: 100;
+  // font-style: italic;
+}
+
+.section {
+  padding: 2rem 0;
+}
+
 body {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  color: #ffffff;
   min-height: 100vh;
   background: #b24592; /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #b24592, #f15f79); /* Chrome 10-25, Safari 5.1-6 */

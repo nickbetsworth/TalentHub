@@ -1,15 +1,17 @@
 <template>
-  <div class="field has-addons">
+  <div class="field has-addons search-bar">
     <div class="control is-expanded">
       <input
         class="input"
         type="text"
         placeholder="Enter a location"
-        @input="changeInput" />
+        @input="changeInput"
+        @keypress.enter="$emit('search')"
+        :disabled="!enabled" />
     </div>
     <div class="control">
-      <a @click="$emit('search')" class="button is-dark">
-        Search
+      <a @click="$emit('search')" class="button" :disabled="!enabled">
+        <img src="@/assets/search.svg"/>
       </a>
     </div>
   </div>
@@ -18,7 +20,7 @@
 <script>
 export default {
   name: 'SearchBar',
-  props: ['value'],
+  props: ['value', 'enabled'],
   data() {
     return {
       content: this.value
@@ -32,7 +34,10 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+.search-bar {
+  box-shadow: 0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19) !important;
+}
 /* input[type=text] {
   width: 200px;
 } */

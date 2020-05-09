@@ -1,7 +1,7 @@
 <template>
   <div class="content">
     <div class="content">
-      <h3 class="header">{{users.length}} results</h3>
+      {{users.length}} results
     </div>
     <div class="tile" style="flex-wrap: wrap;">
       <div class="tile" style="flex: none; padding: 5px; margin: 0" v-for="user in users" :key="user.id">

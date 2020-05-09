@@ -2,7 +2,7 @@
   <div class="tags has-addons">
     <span class="tag is-dark">{{type}}</span>
     <span class="tag is-info">{{remaining}} remaining</span>
-    <span class="tag">Resets {{resetString}}</span>
+    <span class="tag is-success">Resets {{resetString}}</span>
   </div>
 </template>
 
