@@ -1,5 +1,5 @@
 <template>
-  <div class="field is-grouped is-grouped-multiline" style="margin-top: 10px">
+  <div class="field is-grouped is-grouped-multiline">
     <div class="control">
         <h3 class="title is-5">API Limits</h3>
     </div>
@@ -31,5 +31,7 @@ export default {
 </script>
 
 <style scoped>
-
+.field {
+  margin-top: 0.75em
+}
 </style>

@@ -6,8 +6,18 @@
           Talent Hub
         </h1>
       </div>
-      <search-bar v-model="searchCriteria" @search="search" :enabled="searchEnabled"></search-bar>
-      <search-results :users="users"></search-results>
+      <search-bar v-model="searchCriteria" @search="search" :enabled="!searching"></search-bar>
+      <div v-if="!searching && hasSearched">
+        <search-results :users="users"></search-results>
+      </div>
+      <div v-else-if="searching" class="columns is-centered is-vcentered is-mobile" style="height: 30vh">
+        <div class="column is-1">
+          <self-building-square-spinner
+              :animation-duration="2000"
+              :size="80"
+              color="#f5f5f5"/>
+        </div>
+      </div>
     </div>
     <nav class="navbar is-fixed-bottom">
       <div class="container">
@@ -21,6 +31,7 @@
 import LimitStatusBar from './components/LimitStatusBar'
 import SearchBar from './components/SearchBar'
 import SearchResults from './components/SearchResults'
+import { SelfBuildingSquareSpinner  } from 'epic-spinners'
 import axios from 'axios'
 
 export default {
@@ -28,14 +39,16 @@ export default {
   components: {
     LimitStatusBar,
     SearchBar,
-    SearchResults
+    SearchResults,
+    SelfBuildingSquareSpinner
   },
   data() {
     return {
       searchCriteria: '',
       users: [],
-      searchEnabled: true,
-      limits: false
+      searching: false,
+      limits: false,
+      hasSearched: false
     }
   },
   mounted() {
@@ -43,7 +56,10 @@ export default {
   },
   methods: {
     search() {
-      this.searchEnabled = false
+      if (!this.hasSearched)  this.hasSearched = true
+
+      this.searching = true
+      this.users = []
 
       axios.get(`http://localhost:3000/users?location=${this.searchCriteria}`)
       .then(res => {
@@ -51,7 +67,7 @@ export default {
         this.updateLimits()
       })
       .finally(() => {
-        this.searchEnabled = true
+        this.searching = false
       })
     },
     updateLimits() {
@@ -80,20 +96,13 @@ export default {
 
 h1.title {
   font-weight: 100;
-  // font-style: italic;
-}
-
-.section {
-  padding: 2rem 0;
 }
 
 body {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
-  color: #ffffff;
   min-height: 100vh;
-  background: #b24592; /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #b24592, #f15f79); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #b24592, #f15f79); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background-color: #fc5296;
+  background-image: linear-gradient(315deg, #fc5296 0%, #f67062 74%); 
 }
 </style>

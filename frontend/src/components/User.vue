@@ -1,7 +1,7 @@
 <template>
-  <div class="content">
-    <a :href="data.html_url">
-      <img :src="data.avatar_url" width="64px" />
+  <div class="content user">
+    <a :href="data.html_url" target="_blank">
+      <img :src="data.avatar_url" width="77px" />
     </a>
   </div>
 </template>
@@ -14,7 +14,10 @@ export default {
 </script>
 
 <style>
-img {
+.user img {
   border-radius: 15%;
+  -webkit-box-shadow: 10px 10px 15px -10px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 15px -10px rgba(0,0,0,0.75);
+  box-shadow: 10px 10px 15px -10px rgba(0,0,0,0.75);
 }
 </style>

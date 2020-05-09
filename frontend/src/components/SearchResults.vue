@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <div class="content">
+    <div class="content has-text-light">
       {{users.length}} results
     </div>
     <div class="tile" style="flex-wrap: wrap;">
