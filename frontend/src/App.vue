@@ -102,7 +102,7 @@ body {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
   min-height: 100vh;
-  background-color: #fc5296;
-  background-image: linear-gradient(315deg, #fc5296 0%, #f67062 74%); 
+  background-color: #7f53ac;
+  background-image: linear-gradient(315deg, #7f53ac 0%, #647dee 74%);
 }
 </style>
