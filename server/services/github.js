@@ -1,5 +1,6 @@
 const github = require('octonode')
 const querystring = require('querystring')
+const Promise = require('bluebird')
 
 const client = github.client(process.env.GITHUB_ACCESS_TOKEN)
 const ghsearch = client.search()
@@ -12,7 +13,7 @@ const getUsersMatchingCriteria = async criteria => {
     throw new Error('location criteria must be provided')
   }
   
-  users = await aggregatePaginatedResults(
+  searchResults = await aggregatePaginatedResults(
     (page, perPage) => ghsearch.usersAsync({
       page: page,
       per_page: perPage,
@@ -23,7 +24,14 @@ const getUsersMatchingCriteria = async criteria => {
     body => body.items
   )
 
-  return Promise.all(users.map(user => getUser(user.login)))
+  // Map the user search results into actual user objects - this contains more information, such as # followers
+  return Promise.all(searchResults.map(searchResult => {
+    return getUser(searchResult.login).then(user => { 
+      return getUserRepositories(user.login).then(repos => {
+        return {...user, repos: repos}
+      });
+    })
+  }))
 }
 
 const getUser = async username => {
@@ -32,6 +40,15 @@ const getUser = async username => {
   }
 
   result = await client.user(username).infoAsync()
+  return result[0]
+}
+
+const getUserRepositories = async username => {
+  if (!username) {
+    throw new Error('username must be provided')
+  }
+
+  result = await client.user(username).reposAsync();
   return result[0]
 }
 
@@ -62,5 +79,6 @@ const aggregatePaginatedResults = async (queryFunction, extractorFunction) => {
 module.exports = {
   getUsersMatchingCriteria,
   getUser,
+  getUserRepositories,
   getLimits
 }

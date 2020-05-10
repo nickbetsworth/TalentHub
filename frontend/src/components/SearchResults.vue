@@ -1,11 +1,13 @@
 <template>
-  <div class="content">
+  <div>
     <div class="content has-text-light">
       {{users.length}} results
     </div>
-    <div class="tile" style="flex-wrap: wrap;">
-      <div class="tile" style="flex: none; padding: 5px; margin: 0" v-for="user in users" :key="user.id">
-        <user :data="user"></user>
+    <div class="tile is-ancestor" v-for="users in chunkedUsers" :key="users[0].id">
+      <div class="tile is-parent" v-for="user in users" :key="user.id">
+        <div class="tile is-child box">
+          <user :data="user"></user>
+        </div>
       </div>
     </div>
   </div>
@@ -13,12 +15,18 @@
 
 <script>
 import User from './User'
+import chunk from 'chunk'
 
 export default {
   name: 'SearchBar',
   props: ['users'],
   components: {
     User
+  },
+  computed: {
+    chunkedUsers() {
+      return chunk(this.users, 2)
+    }
   }
 }
 </script>
