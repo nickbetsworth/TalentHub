@@ -5,7 +5,7 @@
     </div>
     <div class="tile is-ancestor" v-for="users in chunkedUsers" :key="users[0].id">
       <div class="tile is-parent" v-for="user in users" :key="user.id">
-        <div class="tile is-child box">
+        <div class="tile is-child is-mobile box">
           <user :data="user"></user>
         </div>
       </div>
@@ -25,7 +25,7 @@ export default {
   },
   computed: {
     chunkedUsers() {
-      return chunk(this.users, 2)
+      return chunk(this.users, 3)
     }
   }
 }

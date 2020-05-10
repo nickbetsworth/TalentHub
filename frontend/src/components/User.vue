@@ -13,19 +13,24 @@
         <p class="subtitle is-6"><a :href="data.html_url" target="_blank">@{{data.login}}</a></p>
       </div>
     </div>
-    <div class="content">
+    <div class="content user-card">
       <table>
         <tr>
-          <td><img src="@/assets/followers.svg" /></td>
-          <td>{{data.followers}} followers</td>
+          <td class="user-card-icon"><img src="@/assets/followers.svg" /></td>
+          <td class="user-card-value">{{data.followers}} followers</td>
         </tr>
         <tr>
-          <td><img src="@/assets/star.svg" /></td>
-          <td>{{numRepoStars}} stars</td>
+          <td class="user-card-icon"><img src="@/assets/star.svg" /></td>
+          <td class="user-card-value">{{numRepoStars}} stars</td>
         </tr>
         <tr>
-          <td><img src="@/assets/email.svg" /></td>
-          <td>{{emailString}}</td>
+          <td class="user-card-icon"><img src="@/assets/email.svg" /></td>
+          <td class="user-card-value">
+            <a v-if="hasEmail" :href="'mailto:' + data.email">{{data.email}}</a>
+            <div v-else>
+              <a href="" @click.prevent="$emit('locateMail')" class="button is-small">Locate e-mail</a>
+            </div>
+          </td>
         </tr>
       </table>
     </div>
@@ -37,12 +42,8 @@ export default {
   name: "SearchBar",
   props: ["data"],
   computed: {
-    emailString() {
-      if (!this.data.email) {
-        return 'Locate'
-      }
-
-      return this.data.email
+    hasEmail() {
+      return (this.data.email !== null)
     },
     numRepoStars() {
       return this.data.repos.reduce((total, repo) => total + repo.stargazers_count, 0)
@@ -52,9 +53,12 @@ export default {
 </script>
 
 <style scoped>
-.list {
-  box-shadow: none;
+.user-card-icon {
+  width: 64px;
+  min-width: 64px;
+  white-space: nowrap;
 }
+
 .content {
   margin-top: 0.75rem;
 }
