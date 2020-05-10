@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="container">
+    <div class="container" style="padding-bottom: 5em">
       <div class="section">
         <h1 class="title is-2 has-text-light">
           Talent Hub
