@@ -84,4 +84,7 @@ export default {
 .content {
   margin-top: 0.75rem;
 }
+figure img {
+  border-radius: 6px;
+}
 </style>
