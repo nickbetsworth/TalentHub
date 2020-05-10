@@ -24,6 +24,10 @@
           <td class="user-card-value">{{numRepoStars}} stars</td>
         </tr>
         <tr>
+          <td class="user-card-icon"><img src="@/assets/language.svg" /></td>
+          <td class="user-card-value">{{topLanguages.length ? topLanguages.join(', ') : 'No languages found'}}</td>
+        </tr>
+        <tr>
           <td class="user-card-icon"><img src="@/assets/email.svg" /></td>
           <td class="user-card-value">
             <a v-if="hasEmail" :href="'mailto:' + data.email">{{data.email}}</a>
@@ -47,6 +51,24 @@ export default {
     },
     numRepoStars() {
       return this.data.repos.reduce((total, repo) => total + repo.stargazers_count, 0)
+    },
+    topLanguages() {
+      let dict = {}
+
+      // Create a dictionary of all languages and their corresponding count
+      this.data.repos.forEach(repo => {
+        const lang = repo.language
+        if (lang === null) return
+
+        dict[lang] = dict[lang] ? dict[lang] + 1 : 1
+      });
+      
+      // Sort the languages by frequency, return three most frequent
+      const sortedLangs = Object.keys(dict).sort((first, second) => {
+        return dict[second] - dict[first]
+      })
+
+      return sortedLangs.slice(0, 3)
     }
   }
 };
