@@ -15,6 +15,9 @@
         :remaining="limits.search.remaining"
         :resetTime="limits.search.resetTime" />
     </div>
+    <div class="">
+      <p>Visit <a href="https://github.com/">TalentHub </a>project page</p>
+    </div>
   </div>
 </template>
 
