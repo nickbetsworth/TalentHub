@@ -52,26 +52,6 @@ const getLimits = () => {
   return client.limitAsync()
 }
 
-const aggregatePaginatedResults = async (queryFunction, extractorFunction) => {
-  const itemsPerPage = 100
-  let page = 1
-
-  let items = []
-
-  while (true) {
-    result = await queryFunction(page++, itemsPerPage)
-    const header = result[1]
-    const body = result[0]
-
-    items = items.concat(extractorFunction(body))
-
-    if (header.link && !header.link.includes('rel="next"')) {
-      break
-    }
-  }
-  return items
-}
-
 module.exports = {
   getUsersMatchingCriteria,
   getUser,
