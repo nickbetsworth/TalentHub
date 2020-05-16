@@ -1,12 +1,14 @@
 <template>
   <div>
-    <div class="tile is-ancestor" v-for="users in chunkedUsers" :key="users[0].id">
-      <div class="tile is-parent" v-for="user in users" :key="user.id">
-        <div class="tile is-child is-mobile box">
-          <user :data="user"></user>
+    <transition-group name="list">
+      <div class="tile is-ancestor" v-for="users in chunkedUsers" :key="users[0].id">
+        <div class="tile is-parent" v-for="user in users" :key="user.id">
+          <div class="tile is-child is-mobile box">
+            <user :data="user"></user>
+          </div>
         </div>
       </div>
-    </div>
+    </transition-group>
   </div>
 </template>
 
@@ -28,6 +30,11 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.list-enter-active {
+  transition: all 0.5s;
+}
+.list-enter {
+  opacity: 0;
+}
 </style>
