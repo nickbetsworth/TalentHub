@@ -1,8 +1,5 @@
 <template>
   <div>
-    <div class="content has-text-light">
-      {{users.length}} results
-    </div>
     <div class="tile is-ancestor" v-for="users in chunkedUsers" :key="users[0].id">
       <div class="tile is-parent" v-for="user in users" :key="user.id">
         <div class="tile is-child is-mobile box">

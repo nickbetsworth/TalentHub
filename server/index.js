@@ -18,7 +18,8 @@ app.get('/users', (req, res, next) => {
     followers: '>10'
   }
 
-  github.getUsersMatchingCriteria(criteria)
+  const page = req.query.page
+  github.getUsersMatchingCriteria(criteria, page, 15)
   .then(data => {
     res.send(data)
   })

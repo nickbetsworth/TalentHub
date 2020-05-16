@@ -4,28 +4,24 @@ const Promise = require('bluebird')
 
 const client = github.client(process.env.GITHUB_ACCESS_TOKEN)
 const ghsearch = client.search()
-client.user()
 
 const encodeParams = params => querystring.stringify(params, '+', ':')
 
-const getUsersMatchingCriteria = async criteria => {
+const getUsersMatchingCriteria = async (criteria, page, perPage) => {
   if (!criteria.location) {
     throw new Error('location criteria must be provided')
   }
-  
-  searchResults = await aggregatePaginatedResults(
-    (page, perPage) => ghsearch.usersAsync({
-      page: page,
-      per_page: perPage,
-      q: encodeParams(criteria),
-      sort: 'followers',
-      order: 'desc'
-    }),
-    body => body.items
-  )
 
+  searchResults = await ghsearch.usersAsync({
+    page: page,
+    per_page: perPage,
+    q: encodeParams(criteria),
+    sort: 'followers',
+    order: 'desc'
+  })
+  
   // Map the user search results into actual user objects - this contains more information, such as # followers
-  return Promise.all(searchResults.map(searchResult => {
+  return Promise.all(searchResults[0].items.map(searchResult => {
     return getUser(searchResult.login).then(user => { 
       return getUserRepositories(user.login).then(repos => {
         return {...user, repos: repos}

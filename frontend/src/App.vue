@@ -6,22 +6,17 @@
           Talent Hub
         </h1>
       </div>
-      <search-bar v-model="searchCriteria" @search="search" :enabled="!searching"></search-bar>
-      <div v-if="!searching && hasSearched">
+      <search-bar v-model="searchCriteria" @search="enableSearch" :enabled="!searching"></search-bar>
+      <div v-if="searchActive">
         <search-results :users="users"></search-results>
       </div>
-      <div v-else-if="searching" class="columns is-centered is-vcentered is-mobile" style="height: 30vh">
-        <div class="column is-1">
-          <self-building-square-spinner
-              :animation-duration="2000"
-              :size="80"
-              color="#f5f5f5"/>
-        </div>
-      </div>
+      <scroll-loader :loader-method="loadNextResults" :loader-disable="!loaderEnabled">
+      </scroll-loader>
     </div>
+    
     <nav class="navbar is-fixed-bottom">
       <div class="container">
-        <limit-status-bar v-if="limits" :limits="limits"></limit-status-bar>
+        <limit-status-bar v-if="apiLimits" :limits="apiLimits"></limit-status-bar>
       </div>
     </nav>
   </div>
@@ -31,7 +26,6 @@
 import LimitStatusBar from './components/LimitStatusBar'
 import SearchBar from './components/SearchBar'
 import SearchResults from './components/SearchResults'
-import { SelfBuildingSquareSpinner  } from 'epic-spinners'
 import axios from 'axios'
 
 export default {
@@ -39,42 +33,57 @@ export default {
   components: {
     LimitStatusBar,
     SearchBar,
-    SearchResults,
-    SelfBuildingSquareSpinner
+    SearchResults
   },
   data() {
     return {
       searchCriteria: '',
       users: [],
+      apiLimits: false,
       searching: false,
-      limits: false,
-      hasSearched: false
+      searchActive: false,
+      resultsExhausted: false,
+      currentPage: 1
     }
   },
   mounted() {
-    this.updateLimits()
+    this.updateApiLimits()
+  },
+  computed: {
+    loaderEnabled() {
+      return this.searchActive && !this.resultsExhausted
+    }
   },
   methods: {
-    search() {
-      if (!this.hasSearched)  this.hasSearched = true
+    enableSearch() {
+      if (!this.searchActive)  this.searchActive = true
 
+      this.currentPage = 1
       this.searching = true
-      this.users = []
-
-      axios.get(`http://localhost:3000/users?location=${this.searchCriteria}`)
+      this.resultsExhausted = false
+      this.users = []     
+    },
+    loadNextResults() {
+      axios.get(`http://localhost:3000/users?location=${this.searchCriteria}&page=${this.currentPage++}`)
       .then(res => {
-        this.users = res.data
-        this.updateLimits()
+        if (!res.data.length) {
+          this.resultsExhausted = true
+          return
+        }
+
+        this.users = [...this.users, ...res.data]
+        this.updateApiLimits()
       })
       .finally(() => {
         this.searching = false
+        
       })
     },
-    updateLimits() {
+    updateApiLimits() {
       axios.get('http://localhost:3000/apiLimits')
       .then(res => {
         const limitData = res.data[3].resources
-        this.limits = {
+        this.apiLimits = {
           main: {
             remaining: limitData.core.remaining,
             resetTime: limitData.core.reset
@@ -104,5 +113,25 @@ body {
   min-height: 100vh;
   background-color: #7f53ac;
   background-image: linear-gradient(315deg, #7f53ac 0%, #647dee 74%);
+}
+
+/*
+
+Disable .loader class which is imposed on us by Bulma.
+
+.loader houses the 'loading' animation used by vue-scroll-loader, and there's currently no way
+for us to override the style used. The two styles (Bulma & vue-scroll-loader) interact with each
+other and cause all kinds of ugliness. The following class overrides the styling enforced by Bulma.
+
+*/
+.loader {
+  -webkit-animation: none !important;
+  animation: none !important;
+  border: none !important;
+  border-radius: none !important;
+  content: none !important;
+  height: auto !important;
+  position: relative !important;
+  width: auto !important;
 }
 </style>
