@@ -6,7 +6,7 @@
           Talent Hub
         </h1>
       </div>
-      <search-bar v-model="searchCriteria" @search="enableSearch" :enabled="!searching"></search-bar>
+      <search-bar v-model="searchText" @search="enableSearch" :enabled="!searching"></search-bar>
       <div v-if="error" class="notification">
         {{error}}
       </div>
@@ -40,6 +40,7 @@ export default {
   },
   data() {
     return {
+      searchText: '',
       searchCriteria: '',
       users: [],
       apiLimits: false,
@@ -62,6 +63,7 @@ export default {
     enableSearch() {
       if (!this.searchActive)  this.searchActive = true
 
+      this.searchCriteria = this.searchText;
       this.currentPage = 1
       this.searching = true
       this.autoloadEnabled = true
