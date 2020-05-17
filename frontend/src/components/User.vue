@@ -9,19 +9,19 @@
         </figure>
       </div>
       <div class="media-content">
-        <p class="title is-5">{{data.name}}</p>
-        <p class="subtitle is-6"><a :href="data.html_url" target="_blank">@{{data.login}}</a></p>
+        <p class="title is-5"><a :href="data.html_url" target="_blank">{{data.name}}</a></p>
+        <p v-if="data.company" class="subtitle is-6"><user-company :company="data.company"></user-company></p>
       </div>
     </div>
     <div class="content user-card">
       <table>
         <tr>
           <td class="user-card-icon"><img src="@/assets/followers.svg" /></td>
-          <td class="user-card-value">{{data.followers}} followers</td>
+          <td class="user-card-value">{{data.followers.toLocaleString()}} followers</td>
         </tr>
         <tr>
           <td class="user-card-icon"><img src="@/assets/star.svg" /></td>
-          <td class="user-card-value">{{numRepoStars}} stars</td>
+          <td class="user-card-value">{{numRepoStars.toLocaleString()}} stars</td>
         </tr>
         <tr>
           <td class="user-card-icon"><img src="@/assets/language.svg" /></td>
@@ -42,9 +42,14 @@
 </template>
 
 <script>
+import UserCompany from './UserCompany'
+
 export default {
   name: "SearchBar",
   props: ["data"],
+  components: {
+    UserCompany
+  },
   computed: {
     hasEmail() {
       return (this.data.email !== null)
@@ -55,7 +60,8 @@ export default {
     topLanguages() {
       let dict = {}
 
-      // Create a dictionary of all languages and their corresponding count
+      // Create a dictionary of all languages and the number of repositories that language is used
+      // in one of the user's repositories
       this.data.repos.forEach(repo => {
         const lang = repo.language
         if (lang === null) return
