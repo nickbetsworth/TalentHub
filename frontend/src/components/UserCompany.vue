@@ -9,7 +9,7 @@ export default {
   props: ["company"],
   computed: {
     hyperlinkedCompany() {
-      return this.company.replace(/@(\S+)/g, '<a href="https://github.com/$1" target="_blank">@$1</a>')
+      return this.company.replace(/@([^\s,]+)/g, '<a href="https://github.com/$1" target="_blank">@$1</a>')
     }
   }
 };

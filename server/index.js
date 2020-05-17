@@ -26,14 +26,6 @@ app.get('/users', (req, res, next) => {
   .catch(error => next(error))
 })
 
-app.get('/user/:name', (req, res, next) => {
-  github.getUser(req.params.name)
-  .then(data => {
-    res.send(data)
-  })
-  .catch(error => next(error))
-})
-
 app.get('/apiLimits', (req, res, next) => {
   github.getLimits()
   .then(data => {

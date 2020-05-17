@@ -7,6 +7,9 @@
         </h1>
       </div>
       <search-bar v-model="searchCriteria" @search="enableSearch" :enabled="!searching"></search-bar>
+      <div v-if="error" class="notification">
+        {{error}}
+      </div>
       <div v-if="searchActive">
         <search-results :users="users"></search-results>
       </div>
@@ -42,8 +45,9 @@ export default {
       apiLimits: false,
       searching: false,
       searchActive: false,
-      resultsExhausted: false,
-      currentPage: 1
+      autoloadEnabled: false,
+      currentPage: 1,
+      error: null
     }
   },
   mounted() {
@@ -51,7 +55,7 @@ export default {
   },
   computed: {
     loaderEnabled() {
-      return this.searchActive && !this.resultsExhausted
+      return this.searchActive && this.autoloadEnabled
     }
   },
   methods: {
@@ -60,23 +64,33 @@ export default {
 
       this.currentPage = 1
       this.searching = true
-      this.resultsExhausted = false
-      this.users = []     
+      this.autoloadEnabled = true
+      this.users = []
+      this.error = null
     },
     loadNextResults() {
       axios.get(`http://localhost:3000/users?location=${this.searchCriteria}&page=${this.currentPage++}`)
       .then(res => {
+        // Disable the auto-loader if we've run out of results
         if (!res.data.length) {
-          this.resultsExhausted = true
+          this.autoloadEnabled = false
+
+          if (!this.users.length) {
+            this.error = 'No results found'
+          }
+
           return
         }
 
         this.users = [...this.users, ...res.data]
         this.updateApiLimits()
       })
+      .catch(error => {
+        this.error = error.response.data.error
+        this.autoloadEnabled = false
+      })
       .finally(() => {
         this.searching = false
-        
       })
     },
     updateApiLimits() {

@@ -9,7 +9,7 @@ const encodeParams = params => querystring.stringify(params, '+', ':')
 
 const getUsersMatchingCriteria = async (criteria, page, perPage) => {
   if (!criteria.location) {
-    throw new Error('location criteria must be provided')
+    throw new Error('Location criteria must be provided')
   }
 
   searchResults = await ghsearch.usersAsync({
