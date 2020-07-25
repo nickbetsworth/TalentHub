@@ -32,7 +32,7 @@
           <td class="user-card-value">
             <a v-if="hasEmail" :href="'mailto:' + data.email">{{data.email}}</a>
             <div v-else>
-              <a href="" @click.prevent="$emit('locateMail')" class="button is-small">Locate e-mail</a>
+              <a href="" @click.prevent="locateEmail" class="button is-small">Locate e-mail</a>
             </div>
           </td>
         </tr>
@@ -43,6 +43,7 @@
 
 <script>
 import UserCompany from './UserCompany'
+import axios from 'axios';
 
 export default {
   name: "SearchBar",
@@ -75,6 +76,18 @@ export default {
       })
 
       return sortedLangs.slice(0, 3)
+    }
+  },
+  methods: {
+    locateEmail() {
+      // Todo: fire off an event here and handle email population in App.vue instead.
+      axios.get(`http://localhost:3000/locateEmail/${this.data.login}`)
+      .then(response => {
+        this.data.email = response.data
+      })
+      .catch((response) => {
+        alert(`Oops, ${response}`)
+      })
     }
   }
 };

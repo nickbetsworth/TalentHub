@@ -26,6 +26,13 @@ app.get('/users', (req, res, next) => {
   .catch(error => next(error))
 })
 
+app.get('/locateEmail/:username', (req, res, next) => {
+  github.locateUserEmail(req.params.username).then(data => {
+    res.send(data)
+  })
+  .catch(error => next(error))
+})
+
 app.get('/apiLimits', (req, res, next) => {
   github.getLimits()
   .then(data => {
