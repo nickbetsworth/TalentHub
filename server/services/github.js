@@ -42,9 +42,16 @@ const getUser = async username => {
 const locateUserEmail = async username => {
   // Todo:
   //  - Repository selection ( filter out forks )
-  const repos = await getUserRepositories(username)
-  // Todo: ensure the user has at least one repository
-  return getEmailFromRepo(repos[0])
+  let repos = await getUserRepositories(username)
+  if (repos) {
+    repos = repos.filter(repo => !repo.fork);
+  }
+
+  if (repos.length > 0) {
+    return getEmailFromRepos(repos)
+  }
+
+  throw new Error('Unable to locate e-mail address')
 }
 
 /**
@@ -52,22 +59,27 @@ const locateUserEmail = async username => {
  * 
  * The e-mail is taken from one of the commits near the creation of the repo.
  */
-const getEmailFromRepo = async repo => {
-  // Todo: there must be a better way of getting the 'first commit' date than created_at
-  const date = new Date(Date.parse(repo.created_at) + 3600 * 24 * 7).toISOString()
-  const result = await client.repo(repo.full_name).commitsAsync({
-    until: date
-  })
+const getEmailFromRepos = async repos => {
+  for (let repo of repos) {
+    // Todo: there must be a better way of getting the 'first commit' date than created_at
+    const date = new Date(Date.parse(repo.created_at) + 3600 * 24 * 7).toISOString()
+    const result = await client.repo(repo.full_name).commitsAsync({
+      until: date
+    })
 
-  const commits = result[0].reverse();
+    const commits = result[0].reverse();
 
-  for (let commit of commits) {
-    const author = commit.commit.committer;
-    if (!author.email.endsWith('@users.noreply.github.com')) {
-      return author.email;
+    for (let commit of commits) {
+      const author = commit.commit.committer;
+      // Todo: add exception for @
+      if (!author.email.endsWith('@users.noreply.github.com') && !author.email.endsWith('@github.com')) {
+        return author.email;
+      }
     }
   }
 
+  console.error('Unable to find in the following repos:');
+  console.error(repos);
   throw new Error('Unable to locate e-mail address')
 }
 
