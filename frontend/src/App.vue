@@ -89,8 +89,8 @@ export default {
         this.users = [...this.users, ...users]
         this.updateApiLimits()
       })
-      .catch(error => {
-        this.error = error.response.data.error
+      .catch(() => {
+        this.$toasted.show('An unexpected error occurred whilst retrieving results')
         this.autoloadEnabled = false
       })
       .finally(() => {
@@ -117,7 +117,7 @@ export default {
         this.users.find(user => user.login === username).email = email
       })
       .catch(() => {
-        this.error = 'Unable to locate user\'s email address'
+        this.$toasted.show(`We were unable to locate the user's email address`)
       })
       .finally(() => {
         this.updateApiLimits()
