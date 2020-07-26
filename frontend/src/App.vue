@@ -30,6 +30,7 @@ import LimitStatusBar from './components/LimitStatusBar'
 import SearchBar from './components/SearchBar'
 import SearchResults from './components/SearchResults'
 import * as githubApi from './api/github'
+import bus from './event/bus'
 
 export default {
   name: 'App',
@@ -53,6 +54,7 @@ export default {
   },
   mounted() {
     this.updateApiLimits()
+    bus.$on('locateEmail', this.locateEmail)
   },
   computed: {
     loaderEnabled() {
@@ -63,7 +65,7 @@ export default {
     enableSearch() {
       if (!this.searchActive)  this.searchActive = true
 
-      this.searchCriteria = this.searchText;
+      this.searchCriteria = this.searchText
       this.currentPage = 1
       this.searching = true
       this.autoloadEnabled = true
@@ -107,6 +109,18 @@ export default {
             resetTime: limits.search.reset
           }
         }
+      })
+    },
+    locateEmail(username) {
+      githubApi.locateEmail(username)
+      .then(email => {
+        this.users.find(user => user.login === username).email = email
+      })
+      .catch(() => {
+        this.error = 'Unable to locate user\'s email address'
+      })
+      .finally(() => {
+        this.updateApiLimits()
       })
     }
   }

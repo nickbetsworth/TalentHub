@@ -13,3 +13,9 @@ export const getUsers = (location, page) => {
     return response.data
   })
 }
+
+export const locateEmail = username => {
+  return axios.get(`locateEmail/${username}`).then(response => {
+    return response.data
+  })
+}

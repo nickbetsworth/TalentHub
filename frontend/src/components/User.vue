@@ -9,7 +9,7 @@
         </figure>
       </div>
       <div class="media-content">
-        <p class="title is-5"><a :href="data.html_url" target="_blank">{{data.name}}</a></p>
+        <p class="title is-5"><a :href="data.html_url" target="_blank">{{data.name || data.login}}</a></p>
         <p v-if="data.company" class="subtitle is-6"><user-company :company="data.company"></user-company></p>
       </div>
     </div>
@@ -32,7 +32,13 @@
           <td class="user-card-value">
             <a v-if="hasEmail" :href="'mailto:' + data.email">{{data.email}}</a>
             <div v-else>
-              <a href="" @click.prevent="locateEmail" class="button is-small">Locate e-mail</a>
+              <a
+                href=""
+                class="button is-small"
+                :disabled="locateEmailDisabled"
+                @click.prevent="locateEmail">
+                Locate e-mail
+              </a>
             </div>
           </td>
         </tr>
@@ -43,11 +49,16 @@
 
 <script>
 import UserCompany from './UserCompany'
-import axios from 'axios';
+import bus from '../event/bus'
 
 export default {
   name: "SearchBar",
   props: ["data"],
+  data() {
+    return {
+      locateEmailDisabled: false
+    }
+  },
   components: {
     UserCompany
   },
@@ -68,26 +79,21 @@ export default {
         if (lang === null) return
 
         dict[lang] = dict[lang] ? dict[lang] + 1 : 1
-      });
+      })
       
-      // Sort the languages by frequency, return three most frequent
+      // Sort the languages by frequency
       const sortedLangs = Object.keys(dict).sort((first, second) => {
         return dict[second] - dict[first]
       })
 
+      // Return the three most frequent
       return sortedLangs.slice(0, 3)
     }
   },
   methods: {
     locateEmail() {
-      // Todo: fire off an event here and handle email population in App.vue instead.
-      axios.get(`http://localhost:3000/locateEmail/${this.data.login}`)
-      .then(response => {
-        this.data.email = response.data
-      })
-      .catch((response) => {
-        alert(`Oops, ${response}`)
-      })
+      this.locateEmailDisabled = true
+      bus.$emit('locateEmail', this.data.login)
     }
   }
 };
