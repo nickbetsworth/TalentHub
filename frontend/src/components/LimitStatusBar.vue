@@ -16,7 +16,7 @@
         :resetTime="limits.search.resetTime" />
     </div>
     <div class="">
-      <p>Visit <a href="https://github.com/">TalentHub </a>project page</p>
+      <p>Visit <a href="https://github.com/nickbetsworth/TalentHub/">TalentHub </a>project page</p>
     </div>
   </div>
 </template>
