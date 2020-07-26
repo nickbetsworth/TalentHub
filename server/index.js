@@ -19,7 +19,9 @@ app.get('/users', (req, res, next) => {
   }
 
   const page = req.query.page
-  github.getUsersMatchingCriteria(criteria, page, 15)
+  const per_page = req.query.per_page || 15
+  github.getUsersMatchingCriteria(criteria, page, per_page)
+  
   .then(data => {
     res.send(data)
   })
