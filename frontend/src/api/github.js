@@ -8,8 +8,8 @@ export const getApiLimits = () => {
   })
 }
 
-export const getUsers = (location, page) => {
-  return axios.get(`users?location=${location}&page=${page}`).then(response => {
+export const getUsers = (location, page, perPage) => {
+  return axios.get(`users?location=${location}&page=${page}&perPage=${perPage}`).then(response => {
     return response.data
   })
 }

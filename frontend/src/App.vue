@@ -31,6 +31,7 @@ import SearchBar from './components/SearchBar'
 import SearchResults from './components/SearchResults'
 import * as githubApi from './api/github'
 import bus from './event/bus'
+import config from './config'
 
 export default {
   name: 'App',
@@ -73,21 +74,19 @@ export default {
       this.error = null
     },
     loadNextResults() {
-      githubApi.getUsers(this.searchCriteria, this.currentPage++)
+      githubApi.getUsers(this.searchCriteria, this.currentPage++, config.RESULTS_PER_QUERY)
       .then(users => {
         // Disable the auto-loader if we've run out of results
-        if (!users.length) {
+        if (!users.length || users.length < config.RESULTS_PER_QUERY) {
           this.autoloadEnabled = false
-
-          if (!this.users.length) {
-            this.error = 'No results found'
-          }
-
-          return
         }
 
         this.users = [...this.users, ...users]
         this.updateApiLimits()
+
+        if (!this.users.length) {
+          this.error = 'No results found'
+        }
       })
       .catch(() => {
         this.$toasted.show('An unexpected error occurred whilst retrieving results')
