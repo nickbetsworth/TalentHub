@@ -29,7 +29,7 @@
 import LimitStatusBar from './components/LimitStatusBar'
 import SearchBar from './components/SearchBar'
 import SearchResults from './components/SearchResults'
-import axios from 'axios'
+import * as githubApi from './api/github'
 
 export default {
   name: 'App',
@@ -71,10 +71,10 @@ export default {
       this.error = null
     },
     loadNextResults() {
-      axios.get(`http://localhost:3000/users?location=${this.searchCriteria}&page=${this.currentPage++}`)
-      .then(res => {
+      githubApi.getUsers(this.searchCriteria, this.currentPage++)
+      .then(users => {
         // Disable the auto-loader if we've run out of results
-        if (!res.data.length) {
+        if (!users.length) {
           this.autoloadEnabled = false
 
           if (!this.users.length) {
@@ -84,7 +84,7 @@ export default {
           return
         }
 
-        this.users = [...this.users, ...res.data]
+        this.users = [...this.users, ...users]
         this.updateApiLimits()
       })
       .catch(error => {
@@ -96,17 +96,15 @@ export default {
       })
     },
     updateApiLimits() {
-      axios.get('http://localhost:3000/apiLimits')
-      .then(res => {
-        const limitData = res.data[3].resources
+      githubApi.getApiLimits().then(limits => {
         this.apiLimits = {
           main: {
-            remaining: limitData.core.remaining,
-            resetTime: limitData.core.reset
+            remaining: limits.core.remaining,
+            resetTime: limits.core.reset
           },
           search: {
-            remaining: limitData.search.remaining,
-            resetTime: limitData.search.reset
+            remaining: limits.search.remaining,
+            resetTime: limits.search.reset
           }
         }
       })
